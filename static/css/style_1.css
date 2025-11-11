@@ -1,0 +1,62 @@
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn {
+    border-radius: 6px;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+#scanner-video {
+    border-radius: 8px;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.product-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.table tbody tr[style*="cursor: pointer"]:hover {
+    background-color: #f8f9fa;
+}

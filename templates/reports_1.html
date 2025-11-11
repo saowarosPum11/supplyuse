@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>รายงานความเคลื่อนไหววัสดุสิ้นเปลือง</h2>
+
+{% if low_stock %}
+<div class="alert alert-warning">
+    <h5><i class="fas fa-exclamation-triangle"></i> แจ้งเตือนสต๊อกต่ำ</h5>
+    <ul class="mb-0">
+        {% for item in low_stock %}
+        <li>{{ item[1] }} - คงเหลือ {{ item[5] }} {{ item[3] }} (ขั้นต่ำ {{ item[4] }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>สินค้า</th>
+                <th>ประเภท</th>
+                <th>จำนวน</th>
+                <th>หน่วย</th>
+                <th>เลขที่อ้างอิง</th>
+                <th>หมายเหตุ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movement in movements %}
+            <tr>
+                <td>{{ movement[6] }}</td>
+                <td>{{ movement[7] }}</td>
+                <td>
+                    {% if movement[2] == 'IN' %}
+                        <span class="badge bg-success">รับเข้า</span>
+                    {% else %}
+                        <span class="badge bg-warning">เบิกออก</span>
+                    {% endif %}
+                </td>
+                <td>{{ movement[3] }}</td>
+                <td>{{ movement[8] }}</td>
+                <td>{{ movement[4] or '-' }}</td>
+                <td>{{ movement[5] or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

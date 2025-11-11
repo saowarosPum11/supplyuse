@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างเอกสาร{{ 'รับเข้า' if doc_type == 'RECEIVE' else 'เบิกออก' }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-file-alt me-2"></i> SupplyUse
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>เอกสาร{{ 'รับเข้า' if doc_type == 'RECEIVE' else 'เบิกออก' }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="documentForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">เลขที่เอกสาร</label>
+                                    <input type="text" class="form-control" id="docNo" value="{{ doc_no }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">วันที่</label>
+                                    <input type="date" class="form-control" id="docDate" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">อ้างอิง</label>
+                                    <input type="text" class="form-control" id="reference" placeholder="เลขที่อ้างอิง">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">หมายเหตุ</label>
+                                <textarea class="form-control" id="notes" rows="2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6>รายการสินค้า</h6>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addItem()">
+                            <i class="fas fa-plus"></i> เพิ่มรายการ
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm" id="itemsTable">
+                                <thead>
+                                    <tr>
+                                        <th>สินค้า</th>
+                                        <th>จำนวน</th>
+                                        <th style="display:none;">ราคา/หน่วย</th>
+                                        <th style="display:none;">รวม</th>
+                                        <th>หมายเหตุ</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="button" class="btn btn-success" onclick="saveDocument()">
+                        <i class="fas fa-save"></i> บันทึก
+                    </button>
+                    <a href="/documents" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> กลับ
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6>เลือกสินค้า</h6>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" class="form-control mb-3" id="productSearch" placeholder="ค้นหาสินค้า...">
+                        <div id="productList" style="max-height: 400px; overflow-y: auto;">
+                            {% for product in products %}
+                            <div class="product-item border rounded p-2 mb-2" style="cursor: pointer;" 
+                                 onclick="selectProduct({{ product[0] }}, '{{ product[1] }}', {{ product[3] }})">
+                                <div class="fw-bold">{{ product[1] }}</div>
+                                <small class="text-muted">{{ product[2] or 'ไม่มีบาร์โค้ด' }}</small>
+                                <div class="text-end">
+                                    <small class="badge bg-info">คงเหลือ: {{ product[3] }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let itemCounter = 0;
+        const docType = '{{ doc_type }}';
+        
+        // Set today's date
+        document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+        
+        function addItem() {
+            const tbody = document.getElementById('itemsBody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <select class="form-select form-select-sm" name="product_id_${itemCounter}" required>
+                        <option value="">เลือกสินค้า</option>
+                        {% for product in products %}
+                        <option value="{{ product[0] }}" data-stock="{{ product[3] }}">{{ product[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><input type="number" class="form-control form-control-sm" name="quantity_${itemCounter}" min="1" required></td>
+                <td style="display:none;"><input type="number" class="form-control form-control-sm" name="unit_price_${itemCounter}" step="0.01" min="0" value="0"></td>
+                <td style="display:none;"><input type="number" class="form-control form-control-sm" name="total_price_${itemCounter}" readonly value="0"></td>
+                <td><input type="text" class="form-control form-control-sm" name="item_notes_${itemCounter}"></td>
+                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(this)"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(row);
+            itemCounter++;
+        }
+        
+        function selectProduct(productId, productName, stock) {
+            addItem();
+            const lastRow = document.getElementById('itemsBody').lastElementChild;
+            const select = lastRow.querySelector('select');
+            select.value = productId;
+        }
+        
+        function removeItem(button) {
+            button.closest('tr').remove();
+        }
+        
+        function calculateTotal(input) {
+            const row = input.closest('tr');
+            const quantity = parseFloat(row.querySelector('[name*="quantity"]').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('[name*="unit_price"]').value) || 0;
+            const totalField = row.querySelector('[name*="total_price"]');
+            totalField.value = (quantity * unitPrice).toFixed(2);
+        }
+        
+        function saveDocument() {
+            const form = document.getElementById('documentForm');
+            const tbody = document.getElementById('itemsBody');
+            const rows = tbody.querySelectorAll('tr');
+            
+            if (rows.length === 0) {
+                alert('กรุณาเพิ่มรายการสินค้า');
+                return;
+            }
+            
+            const items = [];
+            let valid = true;
+            
+            rows.forEach(row => {
+                const productId = row.querySelector('select').value;
+                const quantity = parseInt(row.querySelector('[name*="quantity"]').value);
+                const unitPrice = parseFloat(row.querySelector('[name*="unit_price"]').value) || 0;
+                const totalPrice = parseFloat(row.querySelector('[name*="total_price"]').value) || 0;
+                const notes = row.querySelector('[name*="item_notes"]').value;
+                
+                if (!productId || !quantity) {
+                    valid = false;
+                    return;
+                }
+                
+                // Check stock for ISSUE documents
+                if (docType === 'ISSUE') {
+                    const stock = parseInt(row.querySelector('select').selectedOptions[0].dataset.stock);
+                    if (quantity > stock) {
+                        alert(`สต๊อกไม่เพียงพอสำหรับสินค้า ${row.querySelector('select').selectedOptions[0].text}`);
+                        valid = false;
+                        return;
+                    }
+                }
+                
+                items.push({
+                    product_id: productId,
+                    quantity: quantity,
+                    unit_price: unitPrice,
+                    notes: notes
+                });
+            });
+            
+            if (!valid) {
+                alert('กรุณาตรวจสอบข้อมูลให้ครบถ้วน');
+                return;
+            }
+            
+            const data = {
+                doc_no: document.getElementById('docNo').value,
+                doc_type: docType,
+                doc_date: document.getElementById('docDate').value,
+                reference: document.getElementById('reference').value,
+                notes: document.getElementById('notes').value,
+                items: items
+            };
+            
+            // Save to localStorage instead of server
+            const savedDocs = JSON.parse(localStorage.getItem('documents') || '[]');
+            const newDoc = {
+                id: Date.now(),
+                ...data,
+                created_at: new Date().toISOString(),
+                status: 'DRAFT'
+            };
+            savedDocs.push(newDoc);
+            localStorage.setItem('documents', JSON.stringify(savedDocs));
+            
+            alert('บันทึกเอกสารเรียบร้อย (บันทึกใน Browser)');
+            console.log('Saved document:', newDoc);
+            
+            // Redirect to documents list
+            window.location.href = '/documents';
+        }
+        
+        // Product search
+        document.getElementById('productSearch').addEventListener('input', function() {
+            const search = this.value.toLowerCase();
+            const items = document.querySelectorAll('.product-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

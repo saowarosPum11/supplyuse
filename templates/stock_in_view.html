@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รายละเอียดเอกสารรับเข้า</h2>
+    <a href="{{ url_for('stock_in_list') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> กลับ
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>เลขที่เอกสาร: {{ movement[7] or '-' }}</h5>
+        <small class="text-muted">วันที่: {{ movement[6] }}</small>
+    </div>
+    <div class="card-body">
+        <form id="updateForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">สินค้า</label>
+                        <select class="form-select" id="product_id" {% if not can_edit %}disabled{% endif %}>
+                            {% for product in products %}
+                            <option value="{{ product[0] }}" {% if product[0] == movement[1] %}selected{% endif %}>
+                                {{ product[1] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">จำนวน</label>
+                        <input type="number" class="form-control" id="quantity" value="{{ movement[3] }}" {% if not can_edit %}readonly{% endif %}>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">เลขที่อ้างอิง</label>
+                        <input type="text" class="form-control" id="reference" value="{{ movement[4] or '' }}" {% if not can_edit %}readonly{% endif %}>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">หมายเหตุ</label>
+                        <input type="text" class="form-control" id="notes" value="{{ movement[5] or '' }}" {% if not can_edit %}readonly{% endif %}>
+                    </div>
+                </div>
+            </div>
+            
+            {% if can_edit %}
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">บันทึกการแก้ไข</button>
+                <button type="button" class="btn btn-danger" onclick="confirmCancel()">ยกเลิกเอกสาร</button>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                ไม่สามารถแก้ไขเอกสารย้อนหลังได้
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+{% if can_edit %}
+document.getElementById('updateForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        product_id: parseInt(document.getElementById('product_id').value),
+        quantity: parseInt(document.getElementById('quantity').value),
+        reference: document.getElementById('reference').value,
+        notes: document.getElementById('notes').value
+    };
+    
+    try {
+        const response = await fetch('/update_stock_in/{{ movement[0] }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('แก้ไขเอกสารสำเร็จ');
+            location.reload();
+        } else {
+            alert(result.error);
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด');
+    }
+});
+
+function confirmCancel() {
+    if (confirm('คุณต้องการยกเลิกเอกสารนี้หรือไม่?\nการยกเลิกจะไม่สามารถกู้คืนได้')) {
+        cancelDocument();
+    }
+}
+
+async function cancelDocument() {
+    try {
+        const response = await fetch('/cancel_stock_in/{{ movement[0] }}', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('ยกเลิกเอกสารสำเร็จ');
+            window.location.href = '/stock_in_list';
+        } else {
+            alert(result.error);
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด');
+    }
+}
+{% endif %}
+</script>
+{% endblock %}

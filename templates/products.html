@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="fas fa-box me-2 text-primary"></i>ข้อมูลสินค้า</h2>
+        <p class="text-muted mb-0">จัดการข้อมูลและวัสดุสิ้นเปลือง</p>
+    </div>
+    <a href="{{ url_for('add_product') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>เพิ่มสินค้า
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">รูปภาพ</th>
+                        <th style="width: 80px;">รหัส</th>
+                        <th>ชื่อสินค้า</th>
+                        <th style="width: 120px;">บาร์โค้ด</th>
+                        <th style="width: 80px;">หน่วย</th>
+                        <th style="width: 100px;">สต๊อกขั้นต่ำ</th>
+                        <th style="width: 100px;">สต๊อกปัจจุบัน</th>
+                        <th style="width: 100px;">สถานะ</th>
+                        <th style="width: 120px;">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <img src="{{ url_for('product_image', product_id=product[0]) }}" 
+                                 class="product-table-image" 
+                                 alt="รูปสินค้า"
+                                 onclick="showImageModal('{{ url_for('product_image', product_id=product[0]) }}', '{{ product[1] }}')"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxjaXJjbGUgY3g9IjI1IiBjeT0iMjUiIHI9IjEwIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo='">
+                        </td>
+                        <td class="fw-semibold">#{{ product[0] }}</td>
+                        <td class="fw-semibold">{{ product[1] }}</td>
+                        <td><code class="text-muted">{{ product[2] or '-' }}</code></td>
+                        <td>{{ product[3] }}</td>
+                        <td class="text-warning fw-semibold">{{ product[4] }}</td>
+                        <td class="text-primary fw-semibold">{{ product[5] }}</td>
+                        <td>
+                            {% if product[5] <= 0 %}
+                                <span class="badge bg-danger">หมดสต๊อก</span>
+                            {% elif product[5] <= product[4] %}
+                                <span class="badge bg-warning">สต๊อกต่ำ</span>
+                            {% else %}
+                                <span class="badge bg-success">ปกติ</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('edit_product', product_id=product[0]) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit me-1"></i>แก้ไข
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <i class="fas fa-box fa-2x mb-2 d-block"></i>
+                            ไม่มีข้อมูลสินค้า
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="imageModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle">รูปภาพสินค้า</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="รูปภาพสินค้า" style="max-width: 100%; height: auto; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showImageModal(imageSrc, productName) {
+    document.getElementById('modalImage').src = imageSrc;
+    document.getElementById('imageModalTitle').textContent = 'รูปภาพสินค้า: ' + productName;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+</script>
+{% endblock %}

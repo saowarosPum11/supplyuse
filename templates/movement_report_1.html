@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รายงานความเคลื่อนไหววัสดุสิ้นเปลือง</h2>
+    <a href="{{ url_for('reports') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> กลับ
+    </a>
+</div>
+
+{% if low_stock %}
+<div class="alert alert-warning">
+    <h5><i class="fas fa-exclamation-triangle"></i> แจ้งเตือนสต๊อกต่ำ</h5>
+    <ul class="mb-0">
+        {% for item in low_stock %}
+        <li>{{ item[1] }} - คงเหลือ {{ item[5] }} {{ item[3] }} (ขั้นต่ำ {{ item[4] }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% for barcode, barcode_data in movements_by_barcode.items() %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-barcode"></i> {{ barcode_data.product_name }}
+            <small class="text-muted ms-2">(บาร์โค้ด: {{ barcode }})</small>
+            <span class="badge bg-secondary ms-2">{{ barcode_data.movements|length }} รายการ</span>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>วันที่</th>
+                        <th>เลขที่เอกสาร</th>
+                        <th>ประเภท</th>
+                        <th>จำนวน</th>
+                        <th>หน่วย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in barcode_data.movements %}
+                    <tr>
+                        <td>{{ movement[6] }}</td>
+                        <td>{{ movement[7] or '-' }}</td>
+                        <td>
+                            {% if movement[2] == 'IN' %}
+                                <span class="badge bg-success">รับเข้า</span>
+                            {% else %}
+                                <span class="badge bg-warning">เบิกออก</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movement[3] }}</td>
+                        <td>{{ movement[9] }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-secondary fw-bold">
+                        <td colspan="3">รวม</td>
+                        <td>{{ barcode_data.movements|sum(attribute='3') }}</td>
+                        <td>{{ barcode_data.movements[0][9] if barcode_data.movements else '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> ไม่มีข้อมูลความเคลื่อนไหว
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รายการเบิกออกสต๊อก</h2>
+    <a href="{{ url_for('stock_out') }}" class="btn btn-warning">
+        <i class="fas fa-plus"></i> เบิกออกใหม่
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>เลขที่เอกสาร</th>
+                <th>วันที่</th>
+                <th>สินค้า</th>
+                <th>จำนวน</th>
+                <th>หน่วย</th>
+                <th>เลขที่อ้างอิง</th>
+                <th>หมายเหตุ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock_out in stock_outs %}
+            <tr>
+                <td>{{ stock_out[7] or '-' }}</td>
+                <td>{{ stock_out[6] }}</td>
+                <td>{{ stock_out[8] }}</td>
+                <td>{{ stock_out[3] }}</td>
+                <td>{{ stock_out[9] }}</td>
+                <td>{{ stock_out[4] or '-' }}</td>
+                <td>{{ stock_out[5] or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">ไม่มีข้อมูลการเบิกออก</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

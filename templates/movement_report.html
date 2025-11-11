@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รายงานความเคลื่อนไหววัสดุสิ้นเปลือง</h2>
+    <div>
+        <a href="{{ url_for('export_movement_excel') }}" class="btn btn-success me-2">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </a>
+        <a href="{{ url_for('reports') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> กลับ
+        </a>
+    </div>
+</div>
+
+{% if low_stock %}
+<div class="alert alert-warning">
+    <h5><i class="fas fa-exclamation-triangle"></i> แจ้งเตือนสต๊อกต่ำ</h5>
+    <ul class="mb-0">
+        {% for item in low_stock %}
+        <li>{{ item[1] }} - คงเหลือ {{ item[5] }} {{ item[3] }} (ขั้นต่ำ {{ item[4] }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% for barcode, barcode_data in movements_by_barcode.items() %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-barcode"></i> {{ barcode_data.product_name }}
+            <small class="text-muted ms-2">(บาร์โค้ด: {{ barcode }})</small>
+            <span class="badge bg-secondary ms-2">{{ barcode_data.movements|length }} รายการ</span>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>วันที่</th>
+                        <th>เลขที่เอกสาร</th>
+                        <th>ประเภท</th>
+                        <th>จำนวน</th>
+                        <th>หน่วย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in barcode_data.movements %}
+                    <tr>
+                        <td>{{ movement[6] }}</td>
+                        <td>{{ movement[7] or '-' }}</td>
+                        <td>
+                            {% if movement[2] == 'IN' %}
+                                <span class="badge bg-success">รับเข้า</span>
+                            {% else %}
+                                <span class="badge bg-warning">เบิกออก</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movement[3] }}</td>
+                        <td>{{ movement[9] }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-secondary fw-bold">
+                        <td colspan="3">รวม</td>
+                        <td>{{ barcode_data.movements|sum(attribute='3') }}</td>
+                        <td>{{ barcode_data.movements[0][9] if barcode_data.movements else '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> ไม่มีข้อมูลความเคลื่อนไหว
+</div>
+{% endfor %}
+
+<!-- Charts Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-chart-line"></i> แนวโน้มการเคลื่อนไหวสต๊อก</h6>
+            </div>
+            <div class="card-body" style="height: 400px;">
+                <canvas id="movementLineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+setTimeout(function() {
+    const ctx = document.getElementById('movementLineChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['วันที่ 1', 'วันที่ 2', 'วันที่ 3', 'วันที่ 4', 'วันที่ 5'],
+            datasets: [{
+                label: 'รับเข้า',
+                data: [10, 15, 8, 20, 12],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                fill: true
+            }, {
+                label: 'เบิกออก',
+                data: [5, 8, 12, 6, 15],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}, 500);
+</script>
+{% endblock %}

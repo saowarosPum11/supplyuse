@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>เบิกออกสต๊อก</h2>
+
+<form id="stockOutForm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">สินค้า</label>
+                <div class="input-group">
+                    <select class="form-select" id="product_id" required>
+                        <option value="">เลือกสินค้า</option>
+                        {% for product in products %}
+                        <option value="{{ product[0] }}" data-barcode="{{ product[2] }}" data-stock="{{ product[3] }}">
+                            {{ product[1] }} (คงเหลือ: {{ product[3] }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-outline-secondary" onclick="startBarcodeScanner()">
+                        <i class="fas fa-camera"></i> สแกน
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">จำนวน</label>
+                <input type="number" class="form-control" id="quantity" min="1" required>
+                <div class="form-text" id="stock-info"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">เลขที่อ้างอิง</label>
+                <input type="text" class="form-control" id="reference">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">หมายเหตุ</label>
+                <input type="text" class="form-control" id="notes">
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <button type="submit" class="btn btn-warning">บันทึกเบิกออก</button>
+        <button type="reset" class="btn btn-secondary">ล้างข้อมูล</button>
+    </div>
+</form>
+
+<div id="scanner-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">สแกนบาร์โค้ด</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="scanner-video" width="100%" style="border-radius: 8px;"></video>
+                <div class="mt-2">
+                    <small class="text-muted">จัดกล้องให้เห็นบาร์โค้ดในกรอบสี่เหลี่ยม</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('product_id').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const stock = selected.dataset.stock;
+    document.getElementById('stock-info').textContent = stock ? `คงเหลือ: ${stock} หน่วย` : '';
+});
+
+document.getElementById('stockOutForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        product_id: parseInt(document.getElementById('product_id').value),
+        quantity: parseInt(document.getElementById('quantity').value),
+        reference: document.getElementById('reference').value,
+        notes: document.getElementById('notes').value
+    };
+    
+    try {
+        const response = await fetch('/process_stock_out', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('บันทึกเบิกออกสำเร็จ');
+            this.reset();
+            location.reload();
+        } else {
+            alert(result.error);
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการเอกสาร</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-file-alt me-2"></i> SupplyUse
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" id="userInfo"></span>
+                <a class="btn btn-outline-light btn-sm" href="/logout">
+                    <i class="fas fa-sign-out-alt me-1"></i>ออกจากระบบ
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>รายการเอกสาร</h2>
+            <div>
+                <a href="/document/new/RECEIVE" class="btn btn-success me-2">
+                    <i class="fas fa-plus me-2"></i>รับเข้า
+                </a>
+                <a href="/document/new/ISSUE" class="btn btn-warning">
+                    <i class="fas fa-plus me-2"></i>เบิกออก
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>เลขที่เอกสาร</th>
+                                <th>ประเภท</th>
+                                <th>วันที่</th>
+                                <th>อ้างอิง</th>
+                                <th>จำนวนรายการ</th>
+                                <th>สถานะ</th>
+                                <th>การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentsTableBody">
+                            <!-- Data will be loaded by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load documents from localStorage
+        function loadDocuments() {
+            const savedDocs = JSON.parse(localStorage.getItem('documents') || '[]');
+            const tbody = document.getElementById('documentsTableBody');
+            
+            if (savedDocs.length === 0) {
+                // Show mock data if no saved documents
+                tbody.innerHTML = `
+                    <tr>
+                        <td>RE2412001</td>
+                        <td><span class="badge bg-success">รับเข้า</span></td>
+                        <td>2024-12-01</td>
+                        <td>PO-001</td>
+                        <td>3</td>
+                        <td><span class="badge bg-primary">ยืนยันแล้ว</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-1" onclick="viewDocument('RE2412001')"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning" onclick="editDocument('RE2412001')"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>IS2412001</td>
+                        <td><span class="badge bg-warning">เบิกออก</span></td>
+                        <td>2024-12-02</td>
+                        <td>REQ-001</td>
+                        <td>2</td>
+                        <td><span class="badge bg-secondary">ร่าง</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-1" onclick="viewDocument('IS2412001')"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning" onclick="editDocument('IS2412001')"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                // Show saved documents
+                tbody.innerHTML = savedDocs.map(doc => `
+                    <tr>
+                        <td>${doc.doc_no}</td>
+                        <td><span class="badge bg-${doc.doc_type === 'RECEIVE' ? 'success' : 'warning'}">${doc.doc_type === 'RECEIVE' ? 'รับเข้า' : 'เบิกออก'}</span></td>
+                        <td>${doc.doc_date}</td>
+                        <td>${doc.reference || '-'}</td>
+                        <td>${doc.items ? doc.items.length : 0}</td>
+                        <td><span class="badge bg-secondary">ร่าง</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-1" onclick="viewDocument('${doc.doc_no}')"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm btn-warning" onclick="editDocument('${doc.doc_no}')"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+        
+        // Check login status
+        function checkLogin() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            document.getElementById('userInfo').textContent = `${username} (${role})`;
+            return true;
+        }
+        
+        // Load documents when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkLogin()) {
+                loadDocuments();
+            }
+        });
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/logout';
+        }
+        
+        // Edit document function
+        function editDocument(docNo) {
+            window.location.href = `/document/edit/${docNo}`;
+        }
+        
+        // View document function
+        function viewDocument(docNo) {
+            const savedDocs = JSON.parse(localStorage.getItem('documents') || '[]');
+            const doc = savedDocs.find(d => d.doc_no === docNo) || {
+                doc_no: docNo,
+                doc_type: docNo.startsWith('RE') ? 'RECEIVE' : 'ISSUE',
+                doc_date: '2024-12-01',
+                reference: 'PO-001',
+                notes: 'เอกสารตัวอย่าง',
+                items: [{product_name: 'ปากกา', quantity: 10, unit_price: 15}]
+            };
+            
+            document.getElementById('modalDocNo').textContent = doc.doc_no;
+            document.getElementById('modalDocType').innerHTML = `<span class="badge bg-${doc.doc_type === 'RECEIVE' ? 'success' : 'warning'}">${doc.doc_type === 'RECEIVE' ? 'รับเข้า' : 'เบิกออก'}</span>`;
+            document.getElementById('modalDocDate').textContent = doc.doc_date;
+            document.getElementById('modalReference').textContent = doc.reference || '-';
+            document.getElementById('modalNotes').textContent = doc.notes || '-';
+            
+            const itemsHtml = (doc.items || []).map((item, i) => `
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${item.product_name || 'สินค้า'}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unit_price || 0}</td>
+                    <td>${(item.quantity * (item.unit_price || 0)).toFixed(2)}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('modalItems').innerHTML = itemsHtml;
+            
+            new bootstrap.Modal(document.getElementById('documentModal')).show();
+        }
+    </script>
+    
+    <!-- Document View Modal -->
+    <div class="modal fade" id="documentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">รายละเอียดเอกสาร</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>เลขที่เอกสาร:</strong> <span id="modalDocNo"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>ประเภท:</strong> <span id="modalDocType"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>วันที่:</strong> <span id="modalDocDate"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>อ้างอิง:</strong> <span id="modalReference"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>หมายเหตุ:</strong> <span id="modalNotes"></span>
+                    </div>
+                    
+                    <h6>รายการสินค้า</h6>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>สินค้า</th>
+                                <th>จำนวน</th>
+                                <th>ราคา/หน่วย</th>
+                                <th>รวม</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalItems">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success">ยืนยันเอกสาร</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

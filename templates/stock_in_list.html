@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รายการรับเข้าสต๊อก</h2>
+    <a href="{{ url_for('stock_in') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> รับเข้าใหม่
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>เลขที่เอกสาร</th>
+                <th>วันที่</th>
+                <th>สินค้า</th>
+                <th>จำนวน</th>
+                <th>หน่วย</th>
+                <th>เลขที่อ้างอิง</th>
+                <th>หมายเหตุ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock_in in stock_ins %}
+            <tr onclick="window.location.href='{{ url_for('stock_in_view', movement_id=stock_in[0]) }}'" style="cursor: pointer;">
+                <td>{{ stock_in[7] or '-' }}</td>
+                <td>{{ stock_in[6] }}</td>
+                <td>{{ stock_in[8] }}</td>
+                <td>{{ stock_in[3] }}</td>
+                <td>{{ stock_in[9] }}</td>
+                <td>{{ stock_in[4] or '-' }}</td>
+                <td>{{ stock_in[5] or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">ไม่มีข้อมูลการรับเข้า</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

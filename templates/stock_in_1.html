@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>รับเข้าสต๊อก</h2>
+    <a href="{{ url_for('stock_in_list') }}" class="btn btn-outline-success">
+        <i class="fas fa-list"></i> ดูรายการรับเข้า
+    </a>
+</div>
+
+<div class="alert alert-info" id="documentAlert" style="display: none;">
+    <strong>เลขที่เอกสารล่าสุด:</strong> <span id="lastDocumentNo">-</span>
+</div>
+
+<form id="stockInForm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">สินค้า</label>
+                <div class="input-group">
+                    <select class="form-select" id="product_id" required>
+                        <option value="">เลือกสินค้า</option>
+                        {% for product in products %}
+                        <option value="{{ product[0] }}" data-barcode="{{ product[2] }}">{{ product[1] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-outline-secondary" onclick="startBarcodeScanner()">
+                        <i class="fas fa-camera"></i> สแกน
+                    </button>
+                    <button type="button" class="btn btn-outline-info" onclick="startImageSearch()">
+                        <i class="fas fa-image"></i> ค้นหาจากรูป
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">จำนวน</label>
+                <input type="number" class="form-control" id="quantity" min="1" required>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">เลขที่อ้างอิง</label>
+                <input type="text" class="form-control" id="reference">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label class="form-label">หมายเหตุ</label>
+                <input type="text" class="form-control" id="notes">
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <button type="submit" class="btn btn-success">บันทึกรับเข้า</button>
+        <button type="reset" class="btn btn-secondary">ล้างข้อมูล</button>
+    </div>
+</form>
+
+<div id="scanner-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">สแกนบาร์โค้ด</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="scanner-video" width="100%" style="border-radius: 8px;"></video>
+                <div class="mt-2">
+                    <small class="text-muted">จัดกล้องให้เห็นบาร์โค้ดในกรอบสี่เหลี่ยม</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="image-search-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ค้นหาสินค้าจากรูปภาพ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="search-video" width="100%" autoplay style="border-radius: 8px;"></video>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" onclick="captureAndSearch()">
+                        <i class="fas fa-camera"></i> ถ่ายและค้นหา
+                    </button>
+                </div>
+                <div id="search-results" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('stockInForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        product_id: parseInt(document.getElementById('product_id').value),
+        quantity: parseInt(document.getElementById('quantity').value),
+        reference: document.getElementById('reference').value,
+        notes: document.getElementById('notes').value
+    };
+    
+    try {
+        const response = await fetch('/process_stock_in', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        console.log('Response:', result);
+        if (result.success) {
+            const docNo = result.document_no || 'ไม่ระบุ';
+            
+            // Show document number at top
+            document.getElementById('lastDocumentNo').textContent = docNo;
+            document.getElementById('documentAlert').style.display = 'block';
+            
+            alert('บันทึกรับเข้าสำเร็จ\nเลขที่เอกสาร: ' + docNo);
+            this.reset();
+            document.getElementById('product_id').focus();
+        } else {
+            alert('เกิดข้อผิดพลาด: ' + (result.error || 'ไม่ทราบสาเหตุ'));
+        }
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด');
+    }
+});
+</script>
+{% endblock %}
