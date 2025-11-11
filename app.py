@@ -109,11 +109,21 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )''')
         
-        # Insert default admin user if not exists
+        # Insert default users if not exists
         c.execute('SELECT COUNT(*) FROM users WHERE username = ?', ('admin',))
         if c.fetchone()[0] == 0:
             c.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
                      ('admin', 'SupplyUse2024!', 'admin'))
+        
+        c.execute('SELECT COUNT(*) FROM users WHERE username = ?', ('63010468',))
+        if c.fetchone()[0] == 0:
+            c.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+                     ('63010468', '63010468', 'admin'))
+        
+        c.execute('SELECT COUNT(*) FROM users WHERE username = ?', ('10008642',))
+        if c.fetchone()[0] == 0:
+            c.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+                     ('10008642', '10008642', 'admin'))
         
         # Stock movements table
         c.execute('''CREATE TABLE IF NOT EXISTS stock_movements (
