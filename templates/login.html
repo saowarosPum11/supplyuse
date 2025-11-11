@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - SupplyUse</title>
+    <!-- Cache buster: 2024111101 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,7 +17,8 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: url('{{ url_for("static", filename="images/F8BEE5A2-039F-4A48-BB4D-461988112740_0.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Kanit', sans-serif;
             min-height: 100vh;
             display: flex;
@@ -83,13 +85,31 @@
         .login-icon {
             width: 80px;
             height: 80px;
-            background: rgba(255,255,255,0.2);
+            background-color: white !important;
+            background: white !important;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1rem;
             animation: pulse 2s infinite;
+        }
+        
+        .login-header .login-icon {
+            background: white !important;
+            background-color: white !important;
+        }
+        
+        div.login-icon {
+            background: white !important;
+        }
+        
+        /* Force white background */
+        .login-icon,
+        .login-icon::before,
+        .login-icon::after {
+            background: #fff !important;
+            background-color: #fff !important;
         }
         
         @keyframes pulse {
@@ -224,8 +244,8 @@
             <div class="col-md-5 col-lg-4">
                 <div class="card login-card">
                     <div class="login-header">
-                        <div class="login-icon">
-                            <i class="fas fa-gas-pump fa-2x"></i>
+                        <div class="login-icon" style="background: white !important; background-color: white !important;">
+                            <img src="{{ url_for('static', filename='images/ptg_logo_0.png') }}" alt="PTG Logo" style="width: 60px; height: 60px; object-fit: contain;">
                         </div>
                         <h2 class="fw-bold mb-0">SupplyUse</h2>
                         <p class="mb-0 opacity-75">ระบบจัดการสต๊อกวัสดุสิ้นเปลือง</p>
@@ -255,8 +275,6 @@
                                 <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
                             </button>
                         </form>
-                        
-
                     </div>
                 </div>
             </div>

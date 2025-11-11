@@ -610,6 +610,88 @@ def export_movement_excel():
         headers={'Content-Disposition': f'attachment; filename=movement_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'}
     )
 
+@app.route('/export_stock_summary_excel')
+@login_required
+def export_stock_summary_excel():
+    conn = sqlite3.connect('supply_inventory.db')
+    c = conn.cursor()
+    
+    c.execute('SELECT * FROM products ORDER BY name')
+    products = c.fetchall()
+    conn.close()
+    
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    
+    # Stock summary sheet
+    worksheet = workbook.add_worksheet('Stock Summary')
+    headers = ['รหัส', 'ชื่อสินค้า', 'บาร์โค้ด', 'หน่วย', 'สต๊อกขั้นต่ำ', 'สต๊อกปัจจุบัน', 'สถานะ']
+    
+    # Write headers
+    for col, header in enumerate(headers):
+        worksheet.write(0, col, header)
+    
+    # Write data
+    in_stock = 0
+    low_stock = 0
+    out_of_stock = 0
+    
+    for row, product in enumerate(products, 1):
+        worksheet.write(row, 0, product[0])  # ID
+        worksheet.write(row, 1, product[1])  # Name
+        worksheet.write(row, 2, product[2] or '')  # Barcode
+        worksheet.write(row, 3, product[3] or '')  # Unit
+        worksheet.write(row, 4, product[4])  # Min stock
+        worksheet.write(row, 5, product[5])  # Current stock
+        
+        # Status
+        if product[5] <= 0:
+            status = 'หมด'
+            out_of_stock += 1
+        elif product[5] <= product[4]:
+            status = 'สต๊อกต่ำ'
+            low_stock += 1
+            in_stock += 1
+        else:
+            status = 'ปกติ'
+            in_stock += 1
+        
+        worksheet.write(row, 6, status)
+    
+    # Summary statistics sheet
+    summary_sheet = workbook.add_worksheet('Summary Statistics')
+    summary_sheet.write(0, 0, 'สถิติสรุป')
+    summary_sheet.write(2, 0, 'รายการสินค้าทั้งหมด')
+    summary_sheet.write(2, 1, len(products))
+    summary_sheet.write(3, 0, 'สินค้าที่มีสต๊อก')
+    summary_sheet.write(3, 1, in_stock)
+    summary_sheet.write(4, 0, 'สินค้าสต๊อกต่ำ')
+    summary_sheet.write(4, 1, low_stock)
+    summary_sheet.write(5, 0, 'สินค้าหมดสต๊อก')
+    summary_sheet.write(5, 1, out_of_stock)
+    
+    # Create pie chart
+    chart = workbook.add_chart({'type': 'pie'})
+    chart.add_series({
+        'name': 'สถานะสต๊อก',
+        'categories': ['Summary Statistics', 3, 0, 5, 0],
+        'values': ['Summary Statistics', 3, 1, 5, 1],
+        'data_labels': {'percentage': True}
+    })
+    chart.set_title({'name': 'สัดส่วนสถานะสต๊อก'})
+    
+    # Insert chart
+    worksheet.insert_chart('I2', chart)
+    
+    workbook.close()
+    output.seek(0)
+    
+    return Response(
+        output.getvalue(),
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition': f'attachment; filename=stock_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'}
+    )
+
 @app.route('/users')
 @login_required
 def users():
