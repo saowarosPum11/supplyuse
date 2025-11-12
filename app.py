@@ -410,17 +410,20 @@ def process_stock_out():
     if current_stock < data['quantity']:
         return jsonify({'success': False, 'error': 'สต๊อกไม่เพียงพอ'})
     
+    # Generate document number
+    doc_no = generate_document_no(conn, 'OUT')
+    
     # Update stock
     c.execute('UPDATE products SET current_stock = current_stock - ? WHERE id = ?',
              (data['quantity'], data['product_id']))
     
     # Record movement
-    c.execute('INSERT INTO stock_movements (product_id, type, quantity, reference, notes) VALUES (?, ?, ?, ?, ?)',
-             (data['product_id'], 'OUT', data['quantity'], data.get('reference', ''), data.get('notes', '')))
+    c.execute('INSERT INTO stock_movements (product_id, type, quantity, reference, notes, document_no) VALUES (?, ?, ?, ?, ?, ?)',
+             (data['product_id'], 'OUT', data['quantity'], data.get('reference', ''), data.get('notes', ''), doc_no))
     
     conn.commit()
     conn.close()
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'document_no': doc_no})
 
 @app.route('/reports')
 @login_required
@@ -483,6 +486,93 @@ def stock_out_list():
     stock_outs = c.fetchall()
     conn.close()
     return render_template('stock_out_list.html', stock_outs=stock_outs)
+
+@app.route('/stock_out_view/<int:movement_id>')
+def stock_out_view(movement_id):
+    conn = sqlite3.connect('supply_inventory.db')
+    c = conn.cursor()
+    c.execute('''SELECT sm.*, p.name, p.unit 
+                FROM stock_movements sm 
+                JOIN products p ON sm.product_id = p.id 
+                WHERE sm.id = ? AND sm.type = 'OUT' ''', (movement_id,))
+    movement = c.fetchone()
+    
+    c.execute('SELECT id, name FROM products ORDER BY name')
+    products = c.fetchall()
+    
+    conn.close()
+    
+    if not movement:
+        return redirect(url_for('stock_out_list'))
+    
+    # Check if document date is today or future
+    doc_date = datetime.strptime(movement[6][:10], '%Y-%m-%d').date()
+    today = datetime.now().date()
+    can_edit = doc_date >= today
+    
+    return render_template('stock_out_view.html', movement=movement, products=products, can_edit=can_edit)
+
+@app.route('/update_stock_out/<int:movement_id>', methods=['POST'])
+def update_stock_out(movement_id):
+    data = request.get_json()
+    conn = sqlite3.connect('supply_inventory.db')
+    c = conn.cursor()
+    
+    # Get current movement
+    c.execute('SELECT * FROM stock_movements WHERE id = ?', (movement_id,))
+    current = c.fetchone()
+    
+    if not current:
+        return jsonify({'success': False, 'error': 'ไม่พบเอกสาร'})
+    
+    # Check if can edit
+    doc_date = datetime.strptime(current[6][:10], '%Y-%m-%d').date()
+    if doc_date < datetime.now().date():
+        return jsonify({'success': False, 'error': 'ไม่สามารถแก้ไขเอกสารย้อนหลังได้'})
+    
+    # Reverse old stock (add back)
+    c.execute('UPDATE products SET current_stock = current_stock + ? WHERE id = ?',
+             (current[3], current[1]))
+    
+    # Update new stock (subtract new amount)
+    c.execute('UPDATE products SET current_stock = current_stock - ? WHERE id = ?',
+             (data['quantity'], data['product_id']))
+    
+    # Update movement
+    c.execute('UPDATE stock_movements SET product_id=?, quantity=?, reference=?, notes=? WHERE id=?',
+             (data['product_id'], data['quantity'], data.get('reference', ''), data.get('notes', ''), movement_id))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+@app.route('/cancel_stock_out/<int:movement_id>', methods=['POST'])
+def cancel_stock_out(movement_id):
+    conn = sqlite3.connect('supply_inventory.db')
+    c = conn.cursor()
+    
+    # Get movement
+    c.execute('SELECT * FROM stock_movements WHERE id = ?', (movement_id,))
+    movement = c.fetchone()
+    
+    if not movement:
+        return jsonify({'success': False, 'error': 'ไม่พบเอกสาร'})
+    
+    # Check if can cancel
+    doc_date = datetime.strptime(movement[6][:10], '%Y-%m-%d').date()
+    if doc_date < datetime.now().date():
+        return jsonify({'success': False, 'error': 'ไม่สามารถยกเลิกเอกสารย้อนหลังได้'})
+    
+    # Reverse stock (add back)
+    c.execute('UPDATE products SET current_stock = current_stock + ? WHERE id = ?',
+             (movement[3], movement[1]))
+    
+    # Delete movement
+    c.execute('DELETE FROM stock_movements WHERE id = ?', (movement_id,))
+    
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
 
 @app.route('/scan_barcode', methods=['POST'])
 def scan_barcode():

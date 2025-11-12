@@ -105,6 +105,13 @@
 document.getElementById('stockInForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'กำลังบันทึก...';
+    
     const data = {
         product_id: parseInt(document.getElementById('product_id').value),
         quantity: parseInt(document.getElementById('quantity').value),
@@ -121,6 +128,12 @@ document.getElementById('stockInForm').addEventListener('submit', async function
         
         const result = await response.json();
         console.log('Response:', result);
+        
+        // Hide loading overlay and re-enable button
+        document.getElementById('loadingOverlay').classList.add('d-none');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        
         if (result.success) {
             const docNo = result.document_no || 'ไม่ระบุ';
             
@@ -135,6 +148,10 @@ document.getElementById('stockInForm').addEventListener('submit', async function
             alert('เกิดข้อผิดพลาด: ' + (result.error || 'ไม่ทราบสาเหตุ'));
         }
     } catch (error) {
+        // Hide loading overlay and re-enable button on error
+        document.getElementById('loadingOverlay').classList.add('d-none');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
         alert('เกิดข้อผิดพลาด');
     }
 });
