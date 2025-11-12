@@ -21,6 +21,9 @@
             padding: 80px 0;
             text-align: center;
         }
+        .slide:first-child .slide-header {
+            background: url('bg.jpg') center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
         .feature-card {
             transition: transform 0.3s;
             height: 100%;
@@ -66,7 +69,7 @@
 <body>
     <!-- Slide Counter -->
     <div class="slide-counter">
-        <span id="currentSlide">1</span> / <span id="totalSlides">5</span>
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
     </div>
 
     <!-- Navigation -->
@@ -80,24 +83,111 @@
     </div>
 
     <!-- Slide 1: Title -->
-    <div class="slide active">
-        <div class="slide-header">
+    <div class="slide active" style="background: url('bg.jpg') center/cover;">
+        <div class="slide-header" style="background: transparent; padding-top: 250px;">
             <div class="container">
-                <h1 class="display-3 fw-bold mb-4">
+                <h1 class="display-1 fw-bold mb-4" style="font-weight: 900; color: white;">
                     <i class="fas fa-boxes me-3"></i>
-                    SupplyUse
+                    Agentic AI Hackathon 2025
                 </h1>
-                <h2 class="h3 mb-4">Stock Management System</h2>
-                <p class="lead mb-4">ระบบจัดการสต๊อกสินค้าแบบครบวงจร</p>
-                <div class="mt-5">
-                    <span class="badge bg-light text-dark fs-6 me-3">PTG Hackathon 2024</span>
-                    <span class="badge bg-light text-dark fs-6">Flask Web Application</span>
+                <h2 class="display-4 mb-4" style="font-weight: 800; color: white;">Supply Use System</h2>
+                <p class="display-6 mb-4" style="font-weight: 700; color: white;">ระบบบริหารจัดการสต๊อกวัสดุสิ้นเปลือง</p>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Overview -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">📋 ภาพรวมโปรเจค</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 class="text-primary mb-3">🎯 วัตถุประสงค์</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> จัดการสต๊อกสินค้าอย่างมีประสิทธิภาพ</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> ติดตามการเคลื่อนไหวสินค้าเข้า-ออก</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> สร้างรายงานและสถิติการใช้งาน</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> รองรับการสแกนบาร์โค้ดและค้นหาด้วยภาพ</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <h4 class="text-primary mb-3">👥 เป้าหมายผู้ใช้</h4>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-tie fa-2x text-primary mb-2"></i>
+                                    <h6>ผู้จัดการคลัง</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-users fa-2x text-success mb-2"></i>
+                                    <h6>พนักงานรับ-จ่าย</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                                    <h6>ผู้บริหาร</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-store fa-2x text-warning mb-2"></i>
+                                    <h6>เจ้าของธุรกิจ</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 2: Features -->
+    <!-- Slide 3: Architecture -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🏗️ สถาปัตยกรรมระบบ</h2>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <h4 class="text-primary mb-3">เทคโนโลยีที่ใช้</h4>
+                    <div class="mb-3">
+                        <span class="tech-badge"><i class="fab fa-python text-primary"></i> Python Flask</span>
+                        <span class="tech-badge"><i class="fas fa-database text-success"></i> SQLite</span>
+                        <span class="tech-badge"><i class="fab fa-html5 text-danger"></i> HTML5</span>
+                        <span class="tech-badge"><i class="fab fa-css3-alt text-info"></i> CSS3</span>
+                        <span class="tech-badge"><i class="fab fa-js text-warning"></i> JavaScript</span>
+                        <span class="tech-badge"><i class="fab fa-bootstrap text-purple"></i> Bootstrap</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <h4 class="text-primary mb-3">โครงสร้างฐานข้อมูล</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">📦 products (สินค้า)</h6>
+                            <small class="text-muted">id, name, barcode, unit, min_stock, current_stock, image</small>
+                            <hr>
+                            <h6 class="card-title">📊 stock_movements (การเคลื่อนไหว)</h6>
+                            <small class="text-muted">product_id, type (IN/OUT), quantity, reference, notes</small>
+                            <hr>
+                            <h6 class="card-title">👤 users (ผู้ใช้งาน)</h6>
+                            <small class="text-muted">username, password, role, created_at</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Features -->
     <div class="slide">
         <div class="container">
             <h2 class="text-center mb-5">✨ ฟีเจอร์หลัก</h2>
@@ -130,30 +220,155 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 3: Technology -->
-    <div class="slide">
-        <div class="container">
-            <h2 class="text-center mb-5">🏗️ เทคโนโลジีที่ใช้</h2>
-            <div class="row">
-                <div class="col-lg-12 mb-4">
-                    <div class="text-center mb-3">
-                        <span class="tech-badge"><i class="fab fa-python text-primary"></i> Python Flask</span>
-                        <span class="tech-badge"><i class="fas fa-database text-success"></i> SQLite</span>
-                        <span class="tech-badge"><i class="fab fa-html5 text-danger"></i> HTML5</span>
-                        <span class="tech-badge"><i class="fab fa-css3-alt text-info"></i> CSS3</span>
-                        <span class="tech-badge"><i class="fab fa-js text-warning"></i> JavaScript</span>
-                        <span class="tech-badge"><i class="fab fa-bootstrap text-purple"></i> Bootstrap</span>
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">📊 รายงานและสถิติ</h5>
+                            <ul class="list-unstyled text-start">
+                                <li>• รายงานการเคลื่อนไหวสต๊อก</li>
+                                <li>• รายงานสรุปสต๊อก</li>
+                                <li>• แจ้งเตือนสต๊อกต่ำ</li>
+                                <li>• ส่งออกไฟล์ Excel</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-search fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">🔍 ฟีเจอร์ขั้นสูง</h5>
+                            <ul class="list-unstyled text-start">
+                                <li>• สแกนบาร์โค้ด</li>
+                                <li>• ค้นหาสินค้าด้วยภาพ</li>
+                                <li>• ระบบผู้ใช้งานและสิทธิ์</li>
+                                <li>• การจัดการเอกสาร</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 4: Benefits -->
+    <!-- Slide 5: Screenshots -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🎨 หน้าจอหลัก</h2>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-pie fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">สรุปสถิติสต๊อก<br>แจ้งเตือนสต๊อกต่ำ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0"><i class="fas fa-boxes me-2"></i>จัดการสินค้า</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-table fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">รายการสินค้าทั้งหมด<br>ฟอร์มเพิ่ม/แก้ไขสินค้า</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>รับ-เบิกสินค้า</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-clipboard-list fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">ฟอร์มรับ/เบิกสินค้า<br>ประวัติการทำรายการ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>รายงาน</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="text-center">
+                                    <i class="fas fa-file-excel fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">รายงานการเคลื่อนไหว<br>กราฟแสดงแนวโน้ม</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Installation -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🔧 การติดตั้งและใช้งาน</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 class="text-primary mb-3">ความต้องการระบบ</h4>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><i class="fab fa-python text-primary me-2"></i> Python 3.7+</li>
+                                <li class="mb-2"><i class="fas fa-flask text-success me-2"></i> Flask และ dependencies</li>
+                                <li class="mb-2"><i class="fas fa-globe text-info me-2"></i> เว็บเบราว์เซอร์ที่รองรับ HTML5</li>
+                                <li class="mb-2"><i class="fas fa-camera text-warning me-2"></i> กล้องสำหรับสแกนบาร์โค้ด</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h4 class="text-primary mb-3">ขั้นตอนการติดตั้ง</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <pre class="bg-dark text-light p-3 rounded"><code># 1. Clone โปรเจค
+git clone [repository-url]
+
+# 2. ติดตั้ง dependencies
+pip install -r requirements.txt
+
+# 3. รันระบบ
+python app.py</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle me-2"></i>การเข้าใช้งาน</h5>
+                        <p class="mb-2"><strong>URL:</strong> http://localhost:5000</p>
+                        <p class="mb-2"><strong>Admin:</strong> admin / SupplyUse2024!</p>
+                        <p class="mb-0"><strong>User:</strong> 63010468 / 63010468</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Benefits -->
     <div class="slide">
         <div class="container">
             <h2 class="text-center mb-5">📈 ผลลัพธ์และประโยชน์</h2>
@@ -201,7 +416,205 @@
         </div>
     </div>
 
-    <!-- Slide 5: Thank You -->
+    <!-- Slide 8: Future Development -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🚀 การพัฒนาต่อยอด</h2>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <h4 class="text-primary mb-3">ฟีเจอร์เพิ่มเติม</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <i class="fas fa-mobile fa-2x text-primary mb-2"></i>
+                                        <h6>Mobile App</h6>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <i class="fas fa-plug fa-2x text-success mb-2"></i>
+                                        <h6>API Integration</h6>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <i class="fas fa-brain fa-2x text-info mb-2"></i>
+                                        <h6>Advanced Analytics</h6>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="text-center">
+                                        <i class="fas fa-map-marker-alt fa-2x text-warning mb-2"></i>
+                                        <h6>Multi-location</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <h4 class="text-primary mb-3">การปรับปรุง</h4>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <i class="fas fa-rocket text-success me-2"></i>
+                            <strong>Performance Optimization</strong>
+                            <p class="mb-0 text-muted">เพิ่มความเร็วและประสิทธิภาพ</p>
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-shield-alt text-info me-2"></i>
+                            <strong>Security Enhancement</strong>
+                            <p class="mb-0 text-muted">เสริมความปลอดภัยข้อมูล</p>
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-user-friends text-warning me-2"></i>
+                            <strong>User Experience</strong>
+                            <p class="mb-0 text-muted">ปรับปรุงประสบการณ์ผู้ใช้</p>
+                        </div>
+                        <div class="list-group-item">
+                            <i class="fas fa-expand-arrows-alt text-primary me-2"></i>
+                            <strong>Scalability Planning</strong>
+                            <p class="mb-0 text-muted">รองรับการขยายตัวในอนาคต</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Team -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">👥 ทีมพัฒนา</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4 class="mb-0">PTG Hackathon Team</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-server fa-2x text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">System Architecture</h6>
+                                            <small class="text-muted">Backend Development</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-paint-brush fa-2x text-success me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">Frontend Development</h6>
+                                            <small class="text-muted">UI/UX Design</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-database fa-2x text-info me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">Database Design</h6>
+                                            <small class="text-muted">Data Optimization</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-bug fa-2x text-warning me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">Testing & QA</h6>
+                                            <small class="text-muted">Quality Assurance</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Demo -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🎬 การสาธิต</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success text-white text-center">
+                            <h4 class="mb-0"><i class="fas fa-play me-2"></i><a href="../login" style="color: white; text-decoration: none;">Live Demo</a></h4>
+                        </div>
+                        <div class="card-body text-center" style="min-height: 400px;">
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <div>
+                                    <i class="fas fa-desktop fa-5x text-muted mb-4"></i>
+                                    <h3 class="text-muted">การสาธิตระบบ</h3>
+                                    <p class="lead text-muted">แสดงการใช้งานจริงของระบบ SupplyUse</p>
+                                    <div class="mt-4">
+                                        <span class="badge bg-primary fs-6 me-2">เพิ่มสินค้า</span>
+                                        <span class="badge bg-success fs-6 me-2">รับสินค้าเข้า</span>
+                                        <span class="badge bg-info fs-6 me-2">เบิกสินค้าออก</span>
+                                        <span class="badge bg-warning fs-6">สร้างรายงาน</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Summary -->
+    <div class="slide">
+        <div class="container">
+            <h2 class="text-center mb-5">🎉 สรุป</h2>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h4 class="text-primary mb-4">SupplyUse Stock Management System</h4>
+                            <p class="lead mb-4">เป็นโซลูชันที่ครบครันสำหรับการจัดการสต๊อกสินค้า ด้วยฟีเจอร์ที่หลากหลายและใช้งานง่าย เหมาะสำหรับธุรกิจขนาดเล็กถึงกลาง</p>
+                            
+                            <div class="row mt-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success fa-lg me-2"></i>
+                                        <span>ลดต้นทุนการจัดการ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success fa-lg me-2"></i>
+                                        <span>เพิ่มประสิทธิภาพการทำงาน</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success fa-lg me-2"></i>
+                                        <span>ข้อมูลแม่นยำและทันสมัย</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success fa-lg me-2"></i>
+                                        <span>รองรับการเติบโตของธุรกิจ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Q&A -->
     <div class="slide">
         <div class="slide-header">
             <div class="container text-center">
@@ -248,6 +661,25 @@
                 nextSlide();
             } else if (e.key === 'ArrowLeft') {
                 previousSlide();
+            }
+        });
+        
+        // Touch navigation for mobile
+        let startX = 0;
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    previousSlide();
+                }
             }
         });
     </script>
