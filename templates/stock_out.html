@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>เบิกออกสต๊อก</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>เบิกออกสต๊อก</h2>
+    <a href="{{ url_for('stock_out_list') }}" class="btn btn-outline-warning">
+        <i class="fas fa-list"></i> ดูรายการเบิกออก
+    </a>
+</div>
+
+<div class="alert alert-info" id="documentAlert" style="display: none;">
+    <strong>เลขที่เอกสารล่าสุด:</strong> <span id="lastDocumentNo">-</span>
+</div>
 
 <form id="stockOutForm">
     <div class="row">
@@ -112,9 +121,15 @@ document.getElementById('stockOutForm').addEventListener('submit', async functio
         submitBtn.textContent = originalText;
         
         if (result.success) {
-            alert('บันทึกเบิกออกสำเร็จ');
+            const docNo = result.document_no || 'ไม่ระบุ';
+            
+            // Show document number at top
+            document.getElementById('lastDocumentNo').textContent = docNo;
+            document.getElementById('documentAlert').style.display = 'block';
+            
+            alert('บันทึกเบิกออกสำเร็จ\nเลขที่เอกสาร: ' + docNo);
             this.reset();
-            location.reload();
+            document.getElementById('product_id').focus();
         } else {
             alert(result.error);
         }

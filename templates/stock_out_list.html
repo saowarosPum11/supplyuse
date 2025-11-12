@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>รายการเบิกออกสต๊อก</h2>
     <a href="{{ url_for('stock_out') }}" class="btn btn-warning">
@@ -9,7 +10,7 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped table-hover">
         <thead>
             <tr>
                 <th>เลขที่เอกสาร</th>
@@ -23,7 +24,7 @@
         </thead>
         <tbody>
             {% for stock_out in stock_outs %}
-            <tr>
+            <tr class="clickable-row" data-href="{{ url_for('stock_out_view', movement_id=stock_out[0]) }}" style="cursor: pointer;">
                 <td>{{ stock_out[7] or '-' }}</td>
                 <td>{{ stock_out[6] }}</td>
                 <td>{{ stock_out[8] }}</td>
@@ -40,4 +41,16 @@
         </tbody>
     </table>
 </div>
+
+<script>
+// เพิ่ม JavaScript เพื่อให้คลิกแถวได้
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+});
+</script>
 {% endblock %}
