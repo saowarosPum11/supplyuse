@@ -21,6 +21,9 @@
             padding: 80px 0;
             text-align: center;
         }
+        .slide:first-child .slide-header {
+            background: url('bg.jpg') center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
         .feature-card {
             transition: transform 0.3s;
             height: 100%;
@@ -80,19 +83,16 @@
     </div>
 
     <!-- Slide 1: Title -->
-    <div class="slide active">
-        <div class="slide-header">
+    <div class="slide active" style="background: url('bg.jpg') center/cover;">
+        <div class="slide-header" style="background: transparent; padding-top: 250px;">
             <div class="container">
-                <h1 class="display-3 fw-bold mb-4">
+                <h1 class="display-1 fw-bold mb-4" style="font-weight: 900; color: white;">
                     <i class="fas fa-boxes me-3"></i>
-                    SupplyUse
+                    Agentic AI Hackathon 2025
                 </h1>
-                <h2 class="h3 mb-4">Stock Management System</h2>
-                <p class="lead mb-4">ระบบจัดการสต๊อกสินค้าแบบครบวงจร</p>
-                <div class="mt-5">
-                    <span class="badge bg-light text-dark fs-6 me-3">PTG Hackathon 2024</span>
-                    <span class="badge bg-light text-dark fs-6">Flask Web Application</span>
-                </div>
+                <h2 class="display-4 mb-4" style="font-weight: 800; color: white;">Supply Use System</h2>
+                <p class="display-6 mb-4" style="font-weight: 700; color: white;">ระบบบริหารจัดการสต๊อกวัสดุสิ้นเปลือง</p>
+
             </div>
         </div>
     </div>
